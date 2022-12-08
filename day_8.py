@@ -3,39 +3,50 @@ def calculate_scenic_score(i, j, lines):
 
   # left view
   left_score = 0
+  left_loop_broke = False
   for left_j in range(j - 1, -1, -1):
     tree = lines[i][left_j]
     left_score += 1
     if tree >= current_tree:
+      left_loop_broke = True
       break
 
   # right view
   right_score = 0
+  right_loop_broke = False
   for right_j in range(j + 1, len(lines[i])):
     tree = lines[i][right_j]
     right_score += 1
     if tree >= current_tree:
+      right_loop_broke = True
       break
 
   column = [line[j] for line in lines]
 
   # top view
   top_score = 0
+  top_loop_broke = False
   for top_i in range(i - 1, -1, -1):
     tree = lines[top_i][j]
     top_score += 1
     if tree >= current_tree:
+      top_loop_broke = True
       break
 
   # bottom view
   bottom_score = 0
+  bottom_loop_broke = False
   for bottom_i in range(i + 1, len(column)):
     tree = lines[bottom_i][j]
     bottom_score += 1
     if tree >= current_tree:
+      bottom_loop_broke = True
       break
 
-  return left_score * right_score * top_score * bottom_score
+  visible_to_outside = (not left_loop_broke) or (not right_loop_broke) or (not top_loop_broke) or (not bottom_loop_broke)
+
+  return left_score * right_score * top_score * bottom_score, visible_to_outside
+
 
 
 def solve_second(lines):
@@ -43,7 +54,7 @@ def solve_second(lines):
 
   for i in range(len(lines)):
     for j in range(len(lines[i])):
-      scenic_score = calculate_scenic_score(i, j, lines)
+      scenic_score, _ = calculate_scenic_score(i, j, lines)
       if scenic_score > biggest_scenic_score:
         biggest_scenic_score = scenic_score
 
@@ -51,50 +62,12 @@ def solve_second(lines):
 
 
 def solve_first(lines):
-  tree_map = [[False for _ in range(len(lines[0]))] for _ in range(len(lines))]
-
-  # left to right
-  for i in range(len(lines)):
-    biggest_tree_before = -1
-    for j in range(len(lines[i])):
-      visible = lines[i][j] > biggest_tree_before
-      tree_map[i][j] = visible
-      if lines[i][j] > biggest_tree_before:
-        biggest_tree_before = lines[i][j]
-
-  # right to left
-  for i in range(len(lines)):
-    biggest_tree_before = -1
-    for j in range(len(lines[i]) - 1, -1, -1):
-      visible = lines[i][j] > biggest_tree_before
-      tree_map[i][j] = tree_map[i][j] or visible
-      if lines[i][j] > biggest_tree_before:
-        biggest_tree_before = lines[i][j]
-
-  # top to bottom
-  transposed_lines = transpose(lines)
-  for i in range(len(transposed_lines)):
-    biggest_tree_before = -1
-    for j in range(len(transposed_lines[i])):
-      visible = transposed_lines[i][j] > biggest_tree_before
-      tree_map[j][i] = tree_map[j][i] or visible
-      if transposed_lines[i][j] > biggest_tree_before:
-        biggest_tree_before = transposed_lines[i][j]
-
-  # bottom to top
-  transposed_lines = transpose(lines)
-  for i in range(len(transposed_lines)):
-    biggest_tree_before = -1
-    for j in range(len(transposed_lines[i]) - 1, -1, -1):
-      visible = transposed_lines[i][j] > biggest_tree_before
-      tree_map[j][i] = tree_map[j][i] or visible
-      if transposed_lines[i][j] > biggest_tree_before:
-        biggest_tree_before = transposed_lines[i][j]
-
   tree_count = 0
-  for row in tree_map:
-    for tree in row:
-      if tree:
+
+  for i in range(len(lines)):
+    for j in range(len(lines[i])):
+      _, visible_from_outside = calculate_scenic_score(i, j, lines)
+      if visible_from_outside:
         tree_count += 1
 
   return tree_count
