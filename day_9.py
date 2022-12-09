@@ -91,34 +91,34 @@ def calculate_head_movement(heads_coordinate, direction):
 
 
 def calculate_immediate_movement(heads_coordinate, tails_coordinate):
-  should_stay_still = coordinate_around_coordinate(heads_coordinate, tails_coordinate)
+  if coordinate_around_coordinate(heads_coordinate, tails_coordinate):
+    return
 
-  if not should_stay_still:
-    if tails_coordinate.x == heads_coordinate.x:
-      if heads_coordinate.y > tails_coordinate.y:
-        tails_coordinate.y += 1
-      elif heads_coordinate.y < tails_coordinate.y:
-        tails_coordinate.y -= 1
-    elif tails_coordinate.y == heads_coordinate.y:
-      if heads_coordinate.x > tails_coordinate.x:
+  if tails_coordinate.x == heads_coordinate.x:
+    if heads_coordinate.y > tails_coordinate.y:
+      tails_coordinate.y += 1
+    else:
+      tails_coordinate.y -= 1
+  elif tails_coordinate.y == heads_coordinate.y:
+    if heads_coordinate.x > tails_coordinate.x:
+      tails_coordinate.x += 1
+    else:
+      tails_coordinate.x -= 1
+  else: # diagonal move
+    if heads_coordinate.y > tails_coordinate.y:  # top two diagonals
+      if heads_coordinate.x > tails_coordinate.x: # upper right diagonal
         tails_coordinate.x += 1
-      elif heads_coordinate.x < tails_coordinate.x:
+        tails_coordinate.y += 1
+      else: # upper left diagonal
         tails_coordinate.x -= 1
-    else: # diagonal move
-      if heads_coordinate.y > tails_coordinate.y:  # top two diagonals
-        if heads_coordinate.x > tails_coordinate.x: # upper right diagonal
-          tails_coordinate.x += 1
-          tails_coordinate.y += 1
-        else: # upper left diagonal
-          tails_coordinate.x -= 1
-          tails_coordinate.y += 1
-      else: # bottom two diagonals
-        if heads_coordinate.x > tails_coordinate.x:  # bottom right diagonal
-          tails_coordinate.x += 1
-          tails_coordinate.y -= 1
-        else:  # bottom left diagonal
-          tails_coordinate.x -= 1
-          tails_coordinate.y -= 1
+        tails_coordinate.y += 1
+    else: # bottom two diagonals
+      if heads_coordinate.x > tails_coordinate.x:  # bottom right diagonal
+        tails_coordinate.x += 1
+        tails_coordinate.y -= 1
+      else:  # bottom left diagonal
+        tails_coordinate.x -= 1
+        tails_coordinate.y -= 1
 
 
 def coordinate_around_coordinate(coord_a, coord_b):
